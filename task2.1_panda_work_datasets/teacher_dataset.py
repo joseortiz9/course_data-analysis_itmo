@@ -1,7 +1,7 @@
 import pandas as pd
+import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
-from datetime import datetime
 
 # 1
 data = pd.read_csv("Aids2.csv")  # , parse_dates=['death'], date_parser=custom_date_parser)
@@ -13,15 +13,18 @@ print('Size:', data.size)
 print('Shape:', data.shape)
 print('Data types:\n', data.dtypes)
 
+
 # 3
 countBySex = data['sex'].value_counts()
 percentageBySex = data['sex'].value_counts(normalize=True).mul(100).round(3).astype(str) + '%'
 print('number of persons by sex:\n', countBySex)
 print('percentage of persons by sex:\n', percentageBySex)
 
+
 # 4
 percentage4 = len(data.query('age < 45 and sex == "M" and status == "A"')) / len(data.query('sex == "M"'))
 print('Percentage of alive men under age of 45: ', str(round(percentage4 * 100, 3)) + '%')
+
 
 # 5
 title5 = 'relation age-death, age > 14 over time of death using '
@@ -58,18 +61,17 @@ merged7 = pd.concat([data7, wholeAusAverage])
 
 
 # 8
+totalInfectionsByRegion8 = data['state'].value_counts()
 data81 = data.query('status == "D"').groupby('state')['age'].max()
-# print("oldest reported age of people that died by region: \n", data81)
-# data82 = data.query('status == "D"').groupby('state')['age'].min()
-# print("youngest reported age of people that died by region: \n", data82)
+print("oldest reported age of people that died by region: \n", data81)
+data82 = data.query('status == "D"').groupby('state')['age'].min()
+print("youngest reported age of people that died by region: \n", data82)
 
-averages8 = data.groupby('state')['age'].mean()
-# print(averages8[averages8])
-# print("regions where infections average was bigger than the old people (from 55): ", 1)
-
-# print("regions where infections average was bigger than the young people (till 55): ", 1)
-
-# print("regions where infections average was bigger than the adult people (31;54): ", 1)
+data83 = data.groupby(['state', pd.cut(data['age'], bins=[0, 30, 54, 200])]).size().unstack()
+print(data83)
+print("regions where the biggest percent of infections are old people(from 55): ", )
+print("regions where the biggest percent of infections are young people(till 30): ", )
+print("regions where the biggest percent of infections are adult people (31;54): ", )
 
 
 # 9
@@ -81,13 +83,20 @@ for (k, v), n in data9.items():
     indexes9.add(k)
     dataInfected9.setdefault(v, []).append(n)
 
-plotData9 = pd.DataFrame(dataInfected9, index=indexes9)
-lines9 = plotData9.plot.bar(title='types of infections by region')
-lines9.set(xlabel='states', ylabel='amount')
-plt.show()
+# or is possible to get the same data with
+extra_way_data9 = data.groupby('state')['T.categ'].value_counts().unstack()
+
+# plotData9 = pd.DataFrame(dataInfected9, index=indexes9)
+# lines9 = plotData9.plot.bar(stacked=True, title='types of infections by region')
+# lines9.set(xlabel='states', ylabel='amount')
+# plt.show()
 
 
 # 10
-# youngPercent = 1
-# adultPercent = 1
-# oldPercent = 1
+data10 = data.groupby([pd.cut(data['age'], bins=[0, 30, 54, 200]), 'status']).size().unstack()
+# final10 = [index for index, value in data10 if data10[index]['A'] > data10[index]['D']]
+final10 = data10.idxmax(axis="columns").where(data10 == 'A').index.values
+print(data10)
+print(final10)
+print('age intervals where percent dead people is bigger than alive: ', )
+
