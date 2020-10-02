@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import matplotlib.pyplot as plt
 
@@ -28,7 +27,7 @@ print('Percentage of alive men under age of 45: ', str(round(percentage4 * 100, 
 
 # 5
 title5 = 'relation age-death, age > 14 over time of death using '
-# data5 = data.query('age > 14 and status == "D"').sort_values(by='death')
+data5 = data.query('age > 14 and status == "D"').sort_values(by='death')
 # line51 = data5.plot.line(x='death', y='age', title=title5+'pandas.plot.line')
 # plt.show()
 
@@ -67,11 +66,19 @@ print("oldest reported age of people that died by region: \n", data81)
 data82 = data.query('status == "D"').groupby('state')['age'].min()
 print("youngest reported age of people that died by region: \n", data82)
 
-data83 = data.groupby(['state', pd.cut(data['age'], bins=[0, 30, 54, 200])]).size().unstack()
+# I'm not proud of this solutions but it works :(
+names_intervals8 = ['young_range', 'adult_range', 'old_range']
+data_intervals8 = pd.cut(data['age'], bins=[0, 30, 54, 200], labels=names_intervals8)
+data83 = data.groupby(['state', data_intervals8]).size().unstack()
 print(data83)
-print("regions where the biggest percent of infections are old people(from 55): ", )
-print("regions where the biggest percent of infections are young people(till 30): ", )
-print("regions where the biggest percent of infections are adult people (31;54): ", )
+max_ids8 = data83.idxmax(axis='columns')
+
+oldPeople8 = max_ids8[max_ids8 == 'old_range'].index.tolist()
+print("regions where the biggest percent of infections are old people(from 55): ", oldPeople8)
+youngPeople8 = max_ids8[max_ids8 == 'young_range'].index.tolist()
+print("regions where the biggest percent of infections are young people(till 30): ", youngPeople8)
+adultPeople8 = max_ids8[max_ids8 == 'adult_range'].index.tolist()
+print("regions where the biggest percent of infections are adult people (31;54): ", adultPeople8)
 
 
 # 9
@@ -87,6 +94,7 @@ for (k, v), n in data9.items():
 extra_way_data9 = data.groupby('state')['T.categ'].value_counts().unstack()
 
 # plotData9 = pd.DataFrame(dataInfected9, index=indexes9)
+# print(plotData9)
 # lines9 = plotData9.plot.bar(stacked=True, title='types of infections by region')
 # lines9.set(xlabel='states', ylabel='amount')
 # plt.show()
@@ -94,9 +102,7 @@ extra_way_data9 = data.groupby('state')['T.categ'].value_counts().unstack()
 
 # 10
 data10 = data.groupby([pd.cut(data['age'], bins=[0, 30, 54, 200]), 'status']).size().unstack()
-# final10 = [index for index, value in data10 if data10[index]['A'] > data10[index]['D']]
-final10 = data10.idxmax(axis="columns").where(data10 == 'A').index.values
-print(data10)
-print(final10)
-print('age intervals where percent dead people is bigger than alive: ', )
+# print(data10)
+final10 = data10.query('A > D').index.tolist()
+# print('age intervals where percent dead people is bigger than alive: ', final10)
 
