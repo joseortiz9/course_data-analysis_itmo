@@ -83,7 +83,7 @@ print("regions where the biggest percent of infections are adult people (31;54):
 
 # 9
 data9 = data.groupby('state')['T.categ'].value_counts()
-# formatting for plotting (I'm not proud of this code :()
+# formatting for plotting (I'm not proud of this code :( )
 indexes9 = set()
 dataInfected9 = {}
 for (k, v), n in data9.items():
