@@ -28,35 +28,35 @@ print('Percentage of alive men under age of 45: ', str(round(percentage4 * 100, 
 # 5
 title5 = 'relation age-death, age > 14 over time of death using '
 data5 = data.query('age > 14 and status == "D"').sort_values(by='death')
-# line51 = data5.plot.line(x='death', y='age', title=title5+'pandas.plot.line')
-# plt.show()
+line51 = data5.plot.line(x='death', y='age', title=title5+'pandas.plot.line')
+plt.show()
 
-# line52 = px.line(data5, x='death', y='age', title=title5+'pandas.plot.line')
-# line52.show()
+line52 = px.line(data5, x='death', y='age', title=title5+'pandas.plot.line')
+line52.show()
 
 
 # 6
 title6 = 'Dead people under 30 by state using '
 data6 = data.query('age < 30 and status == "D"')
 valuesByState = data6['state'].value_counts()
-# line61 = valuesByState.plot.pie(y='state', startangle=90, autopct='%1.1f%%', title=title6+'pandas.plot.pie')
-# plt.show()
+line61 = valuesByState.plot.pie(y='state', startangle=90, autopct='%1.1f%%', title=title6+'pandas.plot.pie')
+plt.show()
 
-# plt.pie(valuesByState.values, labels=valuesByState.axes[0], startangle=90, autopct='%1.1f%%')
-# plt.title(title6+'matplotlib.pyplot.pie')
-# plt.axis('equal')
-# plt.show()
+plt.pie(valuesByState.values, labels=valuesByState.axes[0], startangle=90, autopct='%1.1f%%')
+plt.title(title6+'matplotlib.pyplot.pie')
+plt.axis('equal')
+plt.show()
 
 
 # 7
 data7 = data.query('status == "D"').groupby('state')['age'].mean()
 wholeAusAverage = pd.Series({"AUS": data.query('status == "D"')['age'].mean()})
 merged7 = pd.concat([data7, wholeAusAverage])
-# line7 = merged7.plot.barh(rot=0, color=['green'], title='dead people by region and whole AUS using pandas.plot.bar')
-# line7.set(xlabel='average age', ylabel='states')
-# for index, value in enumerate(merged7):
-#     plt.text(value - 5, index, str(round(value, 3)), color='white')
-# plt.show()
+line7 = merged7.plot.barh(rot=0, color=['green'], title='dead people by region and whole AUS using pandas.plot.bar')
+line7.set(xlabel='average age', ylabel='states')
+for index, value in enumerate(merged7):
+    plt.text(value - 5, index, str(round(value, 3)), color='white')
+plt.show()
 
 
 # 8
@@ -93,16 +93,16 @@ for (k, v), n in data9.items():
 # or is possible to get the same data with
 extra_way_data9 = data.groupby('state')['T.categ'].value_counts().unstack()
 
-# plotData9 = pd.DataFrame(dataInfected9, index=indexes9)
-# print(plotData9)
-# lines9 = plotData9.plot.bar(stacked=True, title='types of infections by region')
-# lines9.set(xlabel='states', ylabel='amount')
-# plt.show()
+plotData9 = pd.DataFrame(dataInfected9, index=indexes9)
+print(plotData9)
+lines9 = plotData9.plot.bar(stacked=True, title='types of infections by region')
+lines9.set(xlabel='states', ylabel='amount')
+plt.show()
 
 
 # 10
 data10 = data.groupby([pd.cut(data['age'], bins=[0, 30, 54, 200]), 'status']).size().unstack()
-# print(data10)
+print(data10)
 final10 = data10.query('A > D').index.tolist()
-# print('age intervals where percent dead people is bigger than alive: ', final10)
+print('age intervals where percent dead people is bigger than alive: ', final10)
 
